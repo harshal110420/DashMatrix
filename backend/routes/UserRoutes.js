@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authmiddleware = require("../middleware/authMiddleware");
-const checkPermission = require("../middleware/checkPermission");
+const checkPermissionUnified = require("../middleware/checkPermissionUnified");
 
 const {
   createUser,
@@ -17,35 +17,35 @@ const MENU_CODE = "user_management";
 router.post(
   "/create",
   authmiddleware,
-  checkPermission(MENU_CODE, "new"),
+  checkPermissionUnified(MENU_CODE, "new", false),
   createUser
 );
 
 router.get(
   "/all",
   authmiddleware,
-  checkPermission(MENU_CODE, "view"),
+  checkPermissionUnified(MENU_CODE, "view", false),
   getAllUsers
 );
 
 router.get(
   "/get/:id",
   authmiddleware,
-  checkPermission(MENU_CODE, "view"),
+  checkPermissionUnified(MENU_CODE, "view", false),
   getUserByID
 );
 
 router.put(
   "/update/:id",
   authmiddleware,
-  checkPermission(MENU_CODE, "edit"),
+  checkPermissionUnified(MENU_CODE, "edit", false),
   updateUser
 );
 
 router.delete(
   "/delete/:id",
   authmiddleware,
-  checkPermission(MENU_CODE, "delete"),
+  checkPermissionUnified(MENU_CODE, "delete", false),
   deleteUser
 );
 

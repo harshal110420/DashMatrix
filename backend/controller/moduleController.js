@@ -28,7 +28,7 @@ const createModule = asyncHandler(async (req, res) => {
     path,
     version,
     isActive,
-    orderBy,
+    orderBy: orderBy ? Number(orderBy) : null, // ✅ FIX
     created_by: req.user.id, // ✅ capture audit
   });
 

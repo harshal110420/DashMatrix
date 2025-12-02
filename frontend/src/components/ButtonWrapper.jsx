@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 const ButtonWrapper = ({ subModule, permission, children }) => {
   const { user } = useAuth();
   const role = user?.role;
-  const { selectedUserPermissions: modules, loading } = useSelector(
+  const { loggedInUserPermissions: modules, loading } = useSelector(
     (state) => state.userPermission
   );
   // console.log("🧠 ButtonWrapper Debug:");

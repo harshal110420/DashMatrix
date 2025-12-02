@@ -23,7 +23,7 @@ const ModuleRoutes = ({ moduleName }) => {
 
   // Get modules from permission state (same as ModuleLayout uses)
   // This ensures consistency - modules come from permissions which user has access to
-  const permissionModules = useSelector((state) => state.userPermission.selectedUserPermissions);
+  const permissionModules = useSelector((state) => state.userPermission.loggedInUserPermissions);
   const allModulesList = useSelector((state) => state.modules.list);
   const menus = useSelector((state) => state.menus.list);
   const menusLoading = useSelector((state) => state.menus.loading);

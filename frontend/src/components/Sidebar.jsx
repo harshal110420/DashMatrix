@@ -6,7 +6,7 @@ import { useState } from "react";
 const Sidebar = ({ moduleName, collapsed }) => {
   const location = useLocation();
   const { user } = useAuth();
-  const { selectedUserPermissions: modules } = useSelector(
+  const { loggedInUserPermissions: modules } = useSelector(
     (state) => state.userPermission
   );
   const [openCategory, setOpenCategory] = useState(null);

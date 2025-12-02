@@ -45,10 +45,8 @@ export const createModule = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post("/modules", formData);
-      toast.success("Module created successfully");
       return data.module;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create module");
       return rejectWithValue(error.response.data);
     }
   }
@@ -60,10 +58,8 @@ export const updateModule = createAsyncThunk(
   async ({ id, data: formData }, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.put(`/modules/${id}`, formData);
-      toast.success("Module updated successfully");
       return data.module;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update module");
       return rejectWithValue(error.response.data);
     }
   }
@@ -75,10 +71,8 @@ export const deleteModule = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/modules/${id}`);
-      toast.success("Module deleted successfully");
       return id;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to delete module");
       return rejectWithValue(error.response.data);
     }
   }

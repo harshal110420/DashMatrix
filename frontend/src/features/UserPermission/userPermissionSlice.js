@@ -2,76 +2,122 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
 /* ---------------------------------------------------------
-   1️⃣ Fetch permissions of a specific user
+   ✅ Fetch LOGGED IN USER Permissions (SIDEBAR / APP)
+--------------------------------------------------------- */
+export const fetchMyPermissions = createAsyncThunk(
+  "userPermission/fetchMyPermissions",
+  async (userId, thunkAPI) => {
+    try {
+      if (!userId) throw new Error("User id missing");
+
+      console.log("fetchMyPermissions:", userId);
+
+      const res = await axiosInstance.get(
+        `/userPermission/getPermissionbyuser/${userId}`
+      );
+
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data || { message: "Failed to load permissions" }
+      );
+    }
+  }
+);
+
+/* ---------------------------------------------------------
+   ✅ Fetch PERMISSIONS OF SELECTED USER (PERMISSION FORM)
 --------------------------------------------------------- */
 export const fetchPermissionsByUser = createAsyncThunk(
   "userPermission/fetchPermissionsByUser",
   async (userId, thunkAPI) => {
     try {
-      const response = await axiosInstance.get(
+      const res = await axiosInstance.get(
         `/userPermission/getPermissionbyuser/${userId}`
       );
-      return response.data; // should be array of menu/actions
-    } catch (error) {
+
+      return res.data;
+    } catch (err) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || { message: "Something went wrong" }
+        err.response?.data || { message: "Failed to fetch user permissions" }
       );
     }
   }
 );
 
 /* ---------------------------------------------------------
-   2️⃣ Save User Permission (Create or Update)
+   ✅ Save OR Update Permission
 --------------------------------------------------------- */
 export const saveUserPermission = createAsyncThunk(
   "userPermission/saveUserPermission",
   async (data, thunkAPI) => {
     try {
-      const response = await axiosInstance.post(
-        `/userPermission/createPermissionByUser`,
+      const res = await axiosInstance.post(
+        "/userPermission/createPermissionByUser",
         data
       );
-      return response.data;
-    } catch (error) {
+
+      return res.data;
+    } catch (err) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || { message: "Something went wrong" }
+        err.response?.data || { message: "Save permission failed" }
       );
     }
   }
 );
 
 /* ---------------------------------------------------------
-   Initial State
+   ✅ STATE ISOLATION
 --------------------------------------------------------- */
 const initialState = {
-  selectedUserPermissions: [], // actual assigned permissions
+  // 🔐 logged-in user permissions (SIDEBAR)
+  loggedInUserPermissions: [],
+
+  // 🎯 editing user permissions (FORM)
+  selectedUserPermissions: [],
+
   loading: false,
   saving: false,
   error: null,
 };
 
 /* ---------------------------------------------------------
-   Slice
+   ✅ SLICE
 --------------------------------------------------------- */
 const userPermissionSlice = createSlice({
-  name: "userPermissions",
+  name: "userPermission",
   initialState,
+
   reducers: {
-    clearPermissions: (state) => {
+    clearSelectedPermissions: (state) => {
       state.selectedUserPermissions = [];
-      state.error = null;
     },
   },
 
   extraReducers: (builder) => {
+    /* -------------------------------
+       FETCH MY PERMISSIONS (LOGIN USER)
+    ------------------------------- */
     builder
+      .addCase(fetchMyPermissions.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchMyPermissions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.loggedInUserPermissions = action.payload;
+      })
+      .addCase(fetchMyPermissions.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload?.message || "Sidebar permission load failed";
+      });
 
-      /* -------------------------------
-         FETCH PERMISSIONS
-      ------------------------------- */
+    /* -------------------------------
+       FETCH SELECTED USER
+    ------------------------------- */
+    builder
       .addCase(fetchPermissionsByUser.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchPermissionsByUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -79,25 +125,25 @@ const userPermissionSlice = createSlice({
       })
       .addCase(fetchPermissionsByUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Failed to fetch permissions";
-      })
+        state.error = action.payload?.message || "User permission fetch failed";
+      });
 
-      /* -------------------------------
-         SAVE PERMISSION
-      ------------------------------- */
+    /* -------------------------------
+       SAVE PERMISSION
+    ------------------------------- */
+    builder
       .addCase(saveUserPermission.pending, (state) => {
         state.saving = true;
-        state.error = null;
       })
       .addCase(saveUserPermission.fulfilled, (state) => {
         state.saving = false;
       })
       .addCase(saveUserPermission.rejected, (state, action) => {
         state.saving = false;
-        state.error = action.payload?.message || "Failed to save permission";
+        state.error = action.payload?.message || "Saving permission failed";
       });
   },
 });
 
-export const { clearPermissions } = userPermissionSlice.actions;
+export const { clearSelectedPermissions } = userPermissionSlice.actions;
 export default userPermissionSlice.reducer;

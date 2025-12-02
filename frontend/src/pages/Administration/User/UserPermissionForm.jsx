@@ -5,6 +5,7 @@ import {
     fetchAllPermissions,
 } from "../../../features/permissions/permissionSlice";
 import {
+    fetchMyPermissions,
     fetchPermissionsByUser,
     saveUserPermission,
 } from "../../../features/UserPermission/userPermissionSlice";
@@ -12,6 +13,7 @@ import { Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getModulePathByMenu } from "../../../utils/navigation";
+import { useAuth } from "../../../context/AuthContext";
 
 const actionList = [
     "view",
@@ -25,6 +27,8 @@ const actionList = [
 ];
 
 const UserPermissionForm = ({ selectedUser, onClose }) => {
+    const { user } = useAuth();
+    console.log("user:", user)
     // selectedUser should be the user object (contains id, username, role etc)
     const dispatch = useDispatch();
     const { allPermissions: permissions, loading: permsLoading } = useSelector(
@@ -192,11 +196,13 @@ const UserPermissionForm = ({ selectedUser, onClose }) => {
 
         try {
             await Promise.all(requests);
-            toast.success("User permissions saved");
-            // Re-fetch the user permissions to sync
-            await dispatch(fetchPermissionsByUser(selectedUser.id));
-            // setTimeout(() => onClose && onClose(), 250);
-            // ✅ navigate back to Users Page
+            console.log("selectedUser:", selectedUser)
+            console.log("user id:", user.id)
+            if (selectedUser.id === user.id) {
+                await dispatch(fetchPermissionsByUser(selectedUser.id));
+                await dispatch(fetchMyPermissions(user.id));
+            }
+            toast.success("Permissions updated successfully!");
             goBack();
         } catch (err) {
             console.error(err);

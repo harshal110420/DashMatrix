@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authmiddleware = require("../middleware/authMiddleware");
-const checkPermission = require("../middleware/checkPermission");
-const checkPermissionOrOwnRole = require("../middleware/checkPermissionOrOwnRole");
+const checkPermissionUnified = require("../middleware/checkPermissionUnified"); // <- new flexible middleware
 const {
   getPermissionsByRole,
   createOrUpdatePermission,
@@ -20,35 +19,36 @@ const MENU_CODE = "permission_management";
 router.get(
   "/getPermission/:role",
   authmiddleware,
-  checkPermissionOrOwnRole(MENU_CODE, "view"),
+  // checkPermissionOrOwnRole(MENU_CODE, "view"),
+  checkPermissionUnified(MENU_CODE, "view", true),
   getPermissionsByRole
 );
 
 router.get(
   "/getAll",
   authmiddleware,
-  checkPermission(MENU_CODE, "view"),
+  checkPermissionUnified(MENU_CODE, "view", false),
   getAllPermissions
 );
 
 router.get(
   "/get/:id",
   authmiddleware,
-  checkPermission(MENU_CODE, "view"),
+  checkPermissionUnified(MENU_CODE, "view", false),
   getPermissionById
 );
 
 router.post(
   "/create",
   authmiddleware,
-  // checkPermission(MENU_CODE, "new"), // ✅ create → new
+  checkPermissionUnified(MENU_CODE, "new", false), // ✅ create → new
   createOrUpdatePermission
 );
 
 router.delete(
   "/delete/:id",
   authmiddleware,
-  checkPermission(MENU_CODE, "delete"),
+  checkPermissionUnified(MENU_CODE, "delete", false),
   deletePermission
 );
 

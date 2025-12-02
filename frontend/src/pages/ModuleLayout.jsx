@@ -27,7 +27,7 @@ const ModuleLayout = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
 
-  const { selectedUserPermissions: modules } = useSelector(
+  const { loggedInUserPermissions: modules } = useSelector(
     (state) => state.userPermission
   );
   if (!user) return <Navigate to="/" />;
