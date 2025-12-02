@@ -120,6 +120,7 @@ const createOrUpdateUserPermission = async (req, res) => {
       "delete",
       "export",
       "upload",
+      "details",
     ];
 
     const invalid = actions.filter((a) => !VALID_ACTIONS.includes(a));

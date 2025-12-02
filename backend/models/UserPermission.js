@@ -34,6 +34,7 @@ module.exports = () => {
               "delete",
               "export",
               "upload",
+              "details",
             ];
             if (!Array.isArray(value)) {
               throw new Error("Actions must be an array.");
